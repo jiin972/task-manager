@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Pencil, Trash2 } from "lucide-react";
+import { Grip, Pencil, Trash2 } from "lucide-react";
 import {
   BtnToUpdate,
   cardVariants,
@@ -11,9 +11,13 @@ import {
 } from "./style/DragableCard.style";
 import {
   BtnToDelete,
+  BtnToDrag,
+  btnVarianst,
   ButtonContainer,
   TodoForm,
 } from "./style/TodoBoard.style";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 //interface
 interface IEditText {
@@ -26,6 +30,8 @@ interface IDragableCardProps {
   index: number;
   onUpdateClick: (toDoId: number, editText: string) => void;
   onDeleteClick: (toDoId: number) => void;
+  boardId: string;
+  isOverlay: boolean;
 }
 
 function DragalbeCard({
@@ -33,11 +39,21 @@ function DragalbeCard({
   toDoText,
   onDeleteClick,
   onUpdateClick,
+  boardId,
+  isOverlay = false,
 }: IDragableCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const { register, handleSubmit, reset, getValues } = useForm<IEditText>({
     defaultValues: { editText: toDoText },
   });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: String(toDoId),
+      data: {
+        type: "card",
+        boardId: boardId,
+      },
+    });
   //form제출 핸들러 정의(recoil업데이트 명령 전달)
   const onEditSubmit = ({ editText }: IEditText) => {
     const trimedText = editText.trim();
@@ -67,8 +83,21 @@ function DragalbeCard({
       reset({ editText: toDoText });
     }
   };
+  //dnd 스타일 정읠
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
   return (
-    <TodoItem variants={cardVariants} initial="normal" whileHover={"hover"}>
+    <TodoItem
+      variants={cardVariants}
+      initial="normal"
+      whileHover={"hover"}
+      ref={setNodeRef}
+      style={style}
+      $isOverlay={isOverlay}
+      {...attributes}
+    >
       {isEditing ? (
         <TodoForm onSubmit={handleSubmit(onEditSubmit)}>
           <TodoListUpdateInput
@@ -89,6 +118,9 @@ function DragalbeCard({
         <BtnToDelete onClick={() => onDeleteClick(toDoId)}>
           <Trash2 />
         </BtnToDelete>
+        <BtnToDrag variants={btnVarianst} {...listeners} {...attributes}>
+          <Grip />
+        </BtnToDrag>
       </ButtonContainer>
     </TodoItem>
   );

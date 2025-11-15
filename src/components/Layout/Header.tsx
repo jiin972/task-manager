@@ -22,7 +22,11 @@ interface IBoardForm {
   boardName: string;
 }
 
-function Header() {
+interface HeaderProps {
+  $isDragging: boolean;
+}
+
+function Header({ $isDragging }: HeaderProps) {
   const [isDarkMode, setIsDarkMode] = useRecoilState(isDarkAtom); //테마구현을위한 state
   const setAllToDos = useSetRecoilState(toDoState);
   const [isAdding, setIsAdding] = useState(false);
@@ -60,7 +64,7 @@ function Header() {
   };
 
   return (
-    <Wrapper>
+    <Wrapper isDragging={$isDragging}>
       <Title>
         <h2>Task Manager</h2>
       </Title>

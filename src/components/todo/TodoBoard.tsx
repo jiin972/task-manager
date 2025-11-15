@@ -5,7 +5,11 @@ import DragableCard from "./DragableCard";
 import { useState } from "react";
 import BoardTitleEditor from "./BoardTitleEditor";
 import { Pencil, Trash2, Grip } from "lucide-react";
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   btnContainerVariants,
@@ -21,6 +25,7 @@ import {
   TodoInput,
   TodoItems,
 } from "./style/TodoBoard.style";
+import { useDroppable } from "@dnd-kit/core";
 
 //interface
 interface IForm {
@@ -52,16 +57,26 @@ function TodoBoard({
   onDeleteBoard,
   boardTitle,
 }: ITodoBoardProps) {
-  const { setNodeRef, listeners, attributes, transform, transition, isOver } =
-    useSortable({
-      id: boardId,
-      transition: { duration: 0.3, easing: "easeInOut" },
-    });
+  const {
+    setNodeRef,
+    listeners,
+    attributes,
+    transform,
+    transition,
+    isOver,
+    isDragging,
+  } = useSortable({
+    id: boardId,
+  });
   const setAllToDos = useSetRecoilState(toDoState); // 아이템 수정 update를 위한 recoilState
   const [isEditing, setIsEditing] = useState(false); // 보드명 수정을 위한 state
   const { register, handleSubmit, setValue } = useForm<IForm>({
     defaultValues: { toDoItem: "" },
   }); // 아이템 입력/수정/삭제를 위한 form관리
+  const { setNodeRef: setListNodeRef, isOver: listIsOver } = useDroppable({
+    id: `board-list-${boardId}`,
+    data: { type: "board-list", boardId },
+  });
 
   //아이템 입력로직
   const handleValid = ({ toDoItem }: IForm) => {
@@ -83,10 +98,12 @@ function TodoBoard({
     if (window.confirm("선택한 목록을 삭제하시겠습니까?")) {
       setAllToDos((allBoards) => {
         return allBoards.map((board) =>
-          board.id === boardId
+          String(board.id) === String(boardId)
             ? {
                 ...board,
-                toDos: board.toDos.filter((toDo) => toDo.id !== todoId),
+                toDos: board.toDos.filter(
+                  (toDo) => String(toDo.id) !== String(todoId)
+                ),
               }
             : board
         );
@@ -122,14 +139,16 @@ function TodoBoard({
   // dnd-kit/sortable의 style구현
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? undefined : transition,
   };
   return (
     <TodoContainer
       ref={setNodeRef}
       style={style}
       {...attributes}
-      isOver={isOver}
+      $isOver={isOver}
+      $isDragging={isDragging}
+      $listIsOver={listIsOver}
     >
       <TodoHeader
         variants={btnContainerVariants}
@@ -166,18 +185,26 @@ function TodoBoard({
           </BtnToDrag>
         </ButtonContainer>
       </TodoHeader>
-      <TodoItems>
-        {toDos.map((toDo, index) => (
-          <DragableCard
-            key={toDo.id}
-            index={index}
-            toDoId={toDo.id}
-            toDoText={toDo.text}
-            onDeleteClick={onDeleteClick}
-            onUpdateClick={onUpdateClick}
-          />
-        ))}
-      </TodoItems>
+
+      <SortableContext
+        items={toDos.map((toDo) => toDo.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <TodoItems ref={setListNodeRef} $listIsOver={listIsOver}>
+          {toDos.map((toDo, index) => (
+            <DragableCard
+              key={toDo.id}
+              index={index}
+              toDoId={toDo.id}
+              toDoText={toDo.text}
+              onDeleteClick={onDeleteClick}
+              onUpdateClick={onUpdateClick}
+              boardId={boardId}
+              isOverlay={false}
+            />
+          ))}
+        </TodoItems>
+      </SortableContext>
       <TodoForm
         onSubmit={handleSubmit(handleValid)}
         onKeyDown={onKeyDownHandler}

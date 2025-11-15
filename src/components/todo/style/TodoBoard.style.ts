@@ -2,26 +2,32 @@ import { motion, type Variants } from "framer-motion";
 import styled, { css } from "styled-components";
 
 interface ITodoContainerProps {
-  isOver: boolean;
+  $isOver: boolean;
+  $isDragging: boolean;
+  $listIsOver: boolean;
 }
 
 export const TodoContainer = styled.div<ITodoContainerProps>`
   width: 300px;
   min-width: 300px;
-  height: auto;
+  height: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 15px;
   background-color: ${(props) => props.theme.colors.cardColor};
   border-radius: 10px;
   box-shadow: ${(props) => props.theme.colors.shadowColor} 6px 12px 12px;
   ${(props) =>
-    props.isOver &&
+    props.$isDragging &&
     css`
+      z-index: 10;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
       outline: 3px solid ${(props) => props.theme.colors.dragColor};
-    `};
+      opacity: 0.8;
+    `}
 `;
 
 export const TodoHeader = styled(motion.div)`
@@ -37,13 +43,21 @@ export const TodoBoardTitle = styled.div`
   font-weight: 700;
 `;
 
-export const TodoItems = styled(motion.ul)`
+export const TodoItems = styled(motion.ul)<{ $listIsOver: boolean }>`
   width: 100%;
   padding: 20px 30px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
+  flex-grow: 1;
+  overflow-y: auto;
+  ${(props) =>
+    props.$listIsOver &&
+    css`
+      outline: 2px dashed ${props.theme.colors.dragColor};
+      background: rgba(255, 255, 255, 0.05);
+    `}
 `;
 
 export const ButtonContainer = styled(motion.div)`

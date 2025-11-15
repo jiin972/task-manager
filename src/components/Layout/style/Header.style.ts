@@ -1,13 +1,14 @@
 import { motion, type Variants } from "framer-motion";
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ isDragging: boolean }>`
   height: 6vh;
   padding: 30px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 25px;
+  pointer-events: ${(props) => (props.isDragging ? "none" : "auto")};
 `;
 export const Title = styled.div`
   display: flex;

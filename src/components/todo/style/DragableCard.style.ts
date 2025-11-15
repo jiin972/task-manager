@@ -1,7 +1,10 @@
 //styled-components
-
 import { motion, type Variants } from "framer-motion";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+interface ITodoItemProps {
+  $isOverlay?: boolean;
+}
 
 export const TodoForm = styled(motion.form)`
   width: 100%;
@@ -29,7 +32,7 @@ export const TodoListUpdateInput = styled.input`
   }
 `;
 
-export const TodoItem = styled(motion.li)`
+export const TodoItem = styled(motion.ul)<ITodoItemProps>`
   padding: 20px 10px;
   width: 100%;
   height: 100%;
@@ -41,6 +44,19 @@ export const TodoItem = styled(motion.li)`
   border-radius: 0.5rem;
   font-size: 1rem;
   background-color: ${(props) => props.theme.colors.listColor};
+  min-height: 100px;
+  padding-bottom: 50px;
+  ${(props) =>
+    props.$isOverlay &&
+    css`
+      width: 280px;
+      z-index: 10;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      border: 1px solid ${(props) => props.theme.colors.dragColor};
+      opacity: 0.8;
+      cursor: grabbing;
+      transform: none !important;
+    `};
 `;
 
 export const TodoText = styled.div`
