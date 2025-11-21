@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React from "react";
 import { Grip, Pencil, Trash2 } from "lucide-react";
 import {
   BtnToUpdate,
@@ -18,76 +17,56 @@ import {
 } from "./style/TodoBoard.style";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useCardItem } from "../../hooks/useCardItem";
 
 //interface
-interface IEditText {
-  editText: string;
-}
 
 interface IDragableCardProps {
-  toDoId: number;
-  toDoText: string;
+  todoId: number;
+  todoText: string;
   index: number;
-  onUpdateClick: (toDoId: number, editText: string) => void;
-  onDeleteClick: (toDoId: number) => void;
+  onUpdateClick: (todoId: number, editText: string) => void;
+  onDeleteClick: (todoId: number) => void;
   boardId: string;
   isOverlay: boolean;
 }
 
 function DragalbeCard({
-  toDoId,
-  toDoText,
+  todoId,
+  todoText,
   onDeleteClick,
   onUpdateClick,
   boardId,
   isOverlay = false,
 }: IDragableCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const { register, handleSubmit, reset, getValues } = useForm<IEditText>({
-    defaultValues: { editText: toDoText },
+  // useCardItem 훅 사용
+  const {
+    isEditing,
+    register,
+    handleSubmit,
+    onEditSubmit,
+    onBlurHandler,
+    onKeyDownHandler,
+    onStartEditing,
+  } = useCardItem({ todoId, todoText, onUpdateClick });
+  //dnd-kit sortable 훅
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: todoId,
+    data: {
+      type: "card",
+      boardId: boardId,
+    },
   });
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: String(toDoId),
-      data: {
-        type: "card",
-        boardId: boardId,
-      },
-    });
-  //form제출 핸들러 정의(recoil업데이트 명령 전달)
-  const onEditSubmit = ({ editText }: IEditText) => {
-    const trimedText = editText.trim();
-    if (trimedText === "") {
-      alert("내용을 입력해 주세요.");
-      reset({ editText: toDoText });
-      setIsEditing(false);
-      return;
-    }
-    onUpdateClick(toDoId, trimedText);
-    reset({ editText: trimedText });
-    setIsEditing(false);
-  };
-  // 더블클릭으로 수정상태에 대한 몇가지 수정
-  const onBlurHandler = () => {
-    const currentText = getValues("editText").trim();
-    if (currentText && currentText !== toDoText.trim()) {
-      onUpdateClick(toDoId, currentText);
-    }
-    setIsEditing(false);
-    reset({ editText: toDoText || toDoText });
-  };
-
-  const onKeyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      setIsEditing(false);
-      reset({ editText: toDoText });
-    }
-  };
-  //dnd 스타일 정읠
+  //dnd 스타일 정의
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),
   };
+  if (isDragging) {
+    console.log(`[Card ID: ${todoId}] Is Dragging: ${isDragging}`);
+    console.log(`[Card ID: ${todoId}] Transform Style: ${CSS.Transform.toString(transform)}`);
+  }
+
   return (
     <TodoItem
       variants={cardVariants}
@@ -96,6 +75,8 @@ function DragalbeCard({
       ref={setNodeRef}
       style={style}
       $isOverlay={isOverlay}
+      $isDragging={isDragging}
+      {...listeners}
       {...attributes}
     >
       {isEditing ? (
@@ -108,17 +89,17 @@ function DragalbeCard({
           />
         </TodoForm>
       ) : (
-        <TodoText onDoubleClick={() => setIsEditing(true)}>{toDoText}</TodoText>
+        <TodoText onDoubleClick={onStartEditing}>{todoText}</TodoText>
       )}
       <ButtonContainer variants={iconVariants}>
         {/* isEditing으로 호출*/}
-        <BtnToUpdate onClick={() => setIsEditing(true)}>
+        <BtnToUpdate onClick={onStartEditing}>
           <Pencil />
         </BtnToUpdate>
-        <BtnToDelete onClick={() => onDeleteClick(toDoId)}>
+        <BtnToDelete onClick={() => onDeleteClick(todoId)}>
           <Trash2 />
         </BtnToDelete>
-        <BtnToDrag variants={btnVarianst} {...listeners} {...attributes}>
+        <BtnToDrag variants={btnVarianst}>
           <Grip />
         </BtnToDrag>
       </ButtonContainer>

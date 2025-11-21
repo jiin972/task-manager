@@ -64,7 +64,7 @@ function Header({ $isDragging }: HeaderProps) {
   };
 
   return (
-    <Wrapper isDragging={$isDragging}>
+    <Wrapper $isDragging={$isDragging}>
       <Title>
         <h2>Task Manager</h2>
       </Title>
@@ -100,11 +100,7 @@ function Header({ $isDragging }: HeaderProps) {
             </AddBoardBtn>
           )}
         </AnimatePresence>
-        <ThemeToggleBtn
-          variants={toggleBtnVarianst}
-          whileHover={"hover"}
-          onClick={toggleTheme}
-        >
+        <ThemeToggleBtn variants={toggleBtnVarianst} whileHover={"hover"} onClick={toggleTheme}>
           {isDarkMode ? <Sun /> : <Moon />}
         </ThemeToggleBtn>
       </BtnContainer>

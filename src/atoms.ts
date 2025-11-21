@@ -18,16 +18,6 @@ export interface ITodo {
   text: string;
 }
 
-// export interface ITodoState {
-//   [key: string]: ITodo[];
-// }
-
-// export const toDoState = atom<ITodoState>({
-//   key: "todoState",
-//   default: { "해야할 일": [], "진행중인 일": [], "완료된 일": [] },
-//   effects_UNSTABLE: [persistAtom],
-// });
-
 export interface IBoard {
   id: string;
   title: string;

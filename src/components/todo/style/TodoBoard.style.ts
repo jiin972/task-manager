@@ -9,8 +9,8 @@ interface ITodoContainerProps {
 
 export const TodoContainer = styled.div<ITodoContainerProps>`
   width: 300px;
-  min-width: 300px;
-  height: 100%;
+  height: 500px;
+  overflow: scroll;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -23,10 +23,13 @@ export const TodoContainer = styled.div<ITodoContainerProps>`
   ${(props) =>
     props.$isDragging &&
     css`
+      opacity: 0.8;
       z-index: 10;
+      box-shadow: none;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
       outline: 3px solid ${(props) => props.theme.colors.dragColor};
-      opacity: 0.8;
+      pointer-events: none;
+      cursor: grabbing;
     `}
 `;
 

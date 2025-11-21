@@ -48,15 +48,33 @@
 - [src]
   - [components]
     - [Layout]
-      - Header.tsx
+      - Header.tsx -[style]
+        -Header.styled.ts
       - MainContent.tsx
       - Footer.tsx
+      - [todo]
+        - [style]
+          - DragableItem.styled.ts
+          - TodoBoard.styled.ts
+        - BoardTitleEditForm.tsx
+        - DragableCard.tsx
+        - TodoBoard.tsx
+      - ThemeWrapper.tsx
+      - [hooks]
+        - useCardItem.ts
+        - useKanbansDnd.ts
+        - useTodoBoard.ts
+  - App.tsx
+  - atoms.ts
+  - main.tsx
+  - style.d.ts
+  - theme.ts
 
-#### 프로젝트 추가 기능
+#### 프로젝트 추가 기능(예정)
 
 - 시계 컴포넌트 배치
 - 날씨 컴포넌트 추가
-- 드래그 시작 시 화면에 휴지통 나타내기
+- ~~드래그 시작 시 화면에 휴지통 나타내기~~
 
 ---
 

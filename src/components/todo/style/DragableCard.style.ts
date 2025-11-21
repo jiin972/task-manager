@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 
 interface ITodoItemProps {
   $isOverlay?: boolean;
+  $isDragging?: boolean;
 }
 
 export const TodoForm = styled(motion.form)`
@@ -35,17 +36,16 @@ export const TodoListUpdateInput = styled.input`
 export const TodoItem = styled(motion.ul)<ITodoItemProps>`
   padding: 20px 10px;
   width: 100%;
-  height: 100%;
-  min-height: 2rem;
+  height: auto;
+  min-height: 2.8rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 5px;
   border-radius: 0.5rem;
   font-size: 1rem;
+  flex-shrink: 0;
   background-color: ${(props) => props.theme.colors.listColor};
-  min-height: 100px;
-  padding-bottom: 50px;
   ${(props) =>
     props.$isOverlay &&
     css`
@@ -55,8 +55,18 @@ export const TodoItem = styled(motion.ul)<ITodoItemProps>`
       border: 1px solid ${(props) => props.theme.colors.dragColor};
       opacity: 0.8;
       cursor: grabbing;
-      transform: none !important;
     `};
+  ${(props) =>
+    props.$isDragging &&
+    css`
+      height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+      color: transparent;
+      opacity: 0.2;
+      pointer-events: none;
+    `}
 `;
 
 export const TodoText = styled.div`
