@@ -51,7 +51,7 @@ function DragalbeCard({
   } = useCardItem({ todoId, todoText, onUpdateClick });
   //dnd-kit sortable 훅
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: todoId,
+    id: `${boardId}-${todoId}`,
     data: {
       type: "card",
       boardId: boardId,
@@ -63,8 +63,10 @@ function DragalbeCard({
     transform: CSS.Transform.toString(transform),
   };
   if (isDragging) {
-    console.log(`[Card ID: ${todoId}] Is Dragging: ${isDragging}`);
-    console.log(`[Card ID: ${todoId}] Transform Style: ${CSS.Transform.toString(transform)}`);
+    console.log(`[Card ID: ${boardId}-${todoId}] Is Dragging: ${isDragging}`);
+    console.log(
+      `[Card ID: ${boardId}-${todoId}] Transform Style: ${CSS.Transform.toString(transform)}`
+    );
   }
 
   return (
@@ -73,11 +75,11 @@ function DragalbeCard({
       initial="normal"
       whileHover={"hover"}
       ref={setNodeRef}
-      style={style}
+      style={isOverlay ? {} : style}
       $isOverlay={isOverlay}
       $isDragging={isDragging}
-      {...listeners}
-      {...attributes}
+      {...(!isOverlay && listeners)}
+      {...(!isOverlay && attributes)}
     >
       {isEditing ? (
         <TodoForm onSubmit={handleSubmit(onEditSubmit)}>

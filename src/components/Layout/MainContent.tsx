@@ -99,7 +99,7 @@ function MainContent({ setIsDragging }: IMainContentsProps) {
         </SortableContext>
       </Wrapper>
       <DragOverlay>
-        {activeBoard && !activeCard ? (
+        {activeBoard ? (
           <div style={{ width: 300, minWidth: 300 }}>
             <TodoContainer $isOver={false} $isDragging={true} $listIsOver={false}>
               <div
@@ -121,7 +121,7 @@ function MainContent({ setIsDragging }: IMainContentsProps) {
               </div>
             </TodoContainer>
           </div>
-        ) : activeCard && !activeBoard ? (
+        ) : activeCard ? (
           <DragableCard
             todoId={activeCard.id}
             todoText={activeCard.text}
