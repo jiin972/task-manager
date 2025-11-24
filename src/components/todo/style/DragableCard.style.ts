@@ -59,13 +59,11 @@ export const TodoItem = styled(motion.ul)<ITodoItemProps>`
   ${(props) =>
     props.$isDragging &&
     css`
-      height: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      margin-bottom: 0;
-      color: transparent;
-      opacity: 0.2;
-      pointer-events: none;
+      /* 드래그 중일 때 원본 요소는 투명하게 유지하되 공간은 유지해야 합니다. */
+      /* dnd-kit은 드래그된 항목의 시각적 표현을 오버레이를 통해 처리합니다. */
+      /* 이 스타일은 dnd-kit의 전환이 올바르게 작동하도록 불필요한 레이아웃 변경을 제거합니다. */
+      opacity: 0; /* 원본 항목을 보이지 않게 만듭니다. */
+      pointer-events: none; /* 보이지 않는 원본 항목과의 상호 작용을 방지합니다. */
     `}
 `;
 

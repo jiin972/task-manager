@@ -50,22 +50,38 @@ function DragalbeCard({
     onStartEditing,
   } = useCardItem({ todoId, todoText, onUpdateClick });
   //dnd-kit sortable 훅
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: `${boardId}-${todoId}`,
+  // const uniqueId = `${boardId}-${todoId}`;
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: todoId, //`${boardId}-${todoId}`<- 🔥이 id때문에 id비교 불일치로 카드이동 안됨,
     data: {
       type: "card",
       boardId: boardId,
     },
+    disabled: isOverlay,
   });
   //dnd 스타일 정의
   const style = {
+    // isOverlay가 true일 때는 transform과 transition을 적용하지 않습니다.
+    transform: isOverlay ? undefined : CSS.Transform.toString(transform) || "",
     transition,
-    transform: CSS.Transform.toString(transform),
+    // 오버레이가 아닐 때만 isDragging에 따른 투명도를 적용합니다.
+    opacity: !isOverlay && isDragging ? 0.4 : 1,
   };
+
   if (isDragging) {
     console.log(`[Card ID: ${boardId}-${todoId}] Is Dragging: ${isDragging}`);
     console.log(
-      `[Card ID: ${boardId}-${todoId}] Transform Style: ${CSS.Transform.toString(transform)}`
+      `[Card ID: ${boardId}-${todoId}] Transform Style: ${CSS.Transform.toString(
+        transform
+      )}`
     );
   }
 
@@ -73,15 +89,15 @@ function DragalbeCard({
     <TodoItem
       variants={cardVariants}
       initial="normal"
-      whileHover={"hover"}
+      whileHover={isOverlay ? undefined : "hover"}
       ref={setNodeRef}
-      style={isOverlay ? {} : style}
+      style={style} // 수정된 style 객체를 적용합니다.
       $isOverlay={isOverlay}
       $isDragging={isDragging}
       {...(!isOverlay && listeners)}
       {...(!isOverlay && attributes)}
     >
-      {isEditing ? (
+      {isEditing && !isOverlay ? (
         <TodoForm onSubmit={handleSubmit(onEditSubmit)}>
           <TodoListUpdateInput
             {...register("editText", { required: true })}
@@ -91,7 +107,9 @@ function DragalbeCard({
           />
         </TodoForm>
       ) : (
-        <TodoText onDoubleClick={onStartEditing}>{todoText}</TodoText>
+        <TodoText onDoubleClick={!isOverlay ? onStartEditing : undefined}>
+          {todoText}
+        </TodoText>
       )}
       <ButtonContainer variants={iconVariants}>
         {/* isEditing으로 호출*/}

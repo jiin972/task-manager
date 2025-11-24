@@ -75,6 +75,13 @@ function MainContent({ setIsDragging }: IMainContentsProps) {
     }),
     useSensor(TouchSensor)
   );
+  // ✨ 디버깅용 로그
+  useEffect(() => {
+    if (activeId) {
+      console.log("Active ID:", activeId);
+      console.log("Found Active Card:", activeCard);
+    }
+  }, [activeId, activeCard]);
 
   return (
     <DndContext
@@ -101,7 +108,11 @@ function MainContent({ setIsDragging }: IMainContentsProps) {
       <DragOverlay>
         {activeBoard ? (
           <div style={{ width: 300, minWidth: 300 }}>
-            <TodoContainer $isOver={false} $isDragging={true} $listIsOver={false}>
+            <TodoContainer
+              $isOver={false}
+              $isDragging={true}
+              $listIsOver={false}
+            >
               <div
                 style={{
                   display: "flex",
@@ -130,7 +141,7 @@ function MainContent({ setIsDragging }: IMainContentsProps) {
             onDeleteClick={() => {}}
             onUpdateClick={() => {}}
             isOverlay={true}
-          />
+          ></DragableCard>
         ) : null}
       </DragOverlay>
     </DndContext>

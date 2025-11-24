@@ -3,7 +3,11 @@ import DragableCard from "./DragableCard";
 import { useState } from "react";
 import BoardTitleEditor from "./BoardTitleEditor";
 import { Pencil, Trash2, Grip } from "lucide-react";
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   btnContainerVariants,
@@ -34,15 +38,28 @@ interface ITodoBoardProps {
   style?: React.CSSProperties;
 }
 
-function TodoBoard({ boardId, toDos, boardTitle, onRenameBoard, onDeleteBoard }: ITodoBoardProps) {
+function TodoBoard({
+  boardId,
+  toDos,
+  boardTitle,
+  onRenameBoard,
+  onDeleteBoard,
+}: ITodoBoardProps) {
   //dnd-kit Sortable Hook
-  const { setNodeRef, listeners, attributes, transform, transition, isOver, isDragging } =
-    useSortable({
-      id: boardId,
-      data: {
-        type: "board",
-      },
-    });
+  const {
+    setNodeRef,
+    listeners,
+    attributes,
+    transform,
+    transition,
+    isOver,
+    isDragging,
+  } = useSortable({
+    id: boardId,
+    data: {
+      type: "board",
+    },
+  });
   //did-kit Droppable Hook
   const { setNodeRef: setListNodeRef, isOver: listIsOver } = useDroppable({
     id: `board-list-${boardId}`,
@@ -71,11 +88,16 @@ function TodoBoard({ boardId, toDos, boardTitle, onRenameBoard, onDeleteBoard }:
       ref={setNodeRef}
       style={style}
       {...attributes}
+      {...listeners}
       $isOver={isOver}
       $isDragging={isDragging}
       $listIsOver={listIsOver}
     >
-      <TodoHeader variants={btnContainerVariants} initial="normal" whileHover={"hover"}>
+      <TodoHeader
+        variants={btnContainerVariants}
+        initial="normal"
+        whileHover={"hover"}
+      >
         {isEditing ? (
           <BoardTitleEditor
             boardId={boardId}
@@ -84,22 +106,33 @@ function TodoBoard({ boardId, toDos, boardTitle, onRenameBoard, onDeleteBoard }:
             onUpdateClick={(id, newTitle) => onRenameBoard(id, newTitle)}
           />
         ) : (
-          <TodoBoardTitle onDoubleClick={() => setIsEditing(true)}>{boardTitle}</TodoBoardTitle>
+          <TodoBoardTitle onDoubleClick={() => setIsEditing(true)}>
+            {boardTitle}
+          </TodoBoardTitle>
         )}
         <ButtonContainer>
-          <BtnToModify variants={btnVarianst} onClick={() => setIsEditing(true)}>
+          <BtnToModify
+            variants={btnVarianst}
+            onClick={() => setIsEditing(true)}
+          >
             <Pencil />
           </BtnToModify>
-          <BtnToDelete onClick={() => onDeleteBoard(boardId)} variants={btnVarianst}>
+          <BtnToDelete
+            onClick={() => onDeleteBoard(boardId)}
+            variants={btnVarianst}
+          >
             <Trash2 />
           </BtnToDelete>
-          <BtnToDrag variants={btnVarianst} {...listeners}>
+          <BtnToDrag variants={btnVarianst}>
             <Grip />
           </BtnToDrag>
         </ButtonContainer>
       </TodoHeader>
 
-      <SortableContext items={toDos.map((toDo) => toDo.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={toDos.map((toDo) => toDo.id)}
+        strategy={verticalListSortingStrategy}
+      >
         <TodoItems ref={setListNodeRef} $listIsOver={listIsOver}>
           {toDos.map((toDo, index) => (
             <DragableCard
