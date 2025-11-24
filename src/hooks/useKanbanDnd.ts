@@ -196,10 +196,10 @@ export function useKanbanDnd(setIsDragging: BooleanSetter) {
     }
   };
 
-  //Active Card 찾기 로직
+  //Active Card 찾기 로직(🔥activeId와 foundActiveId의 불일치로 카드DND안되던 것을 해결)
   const activeCard = useMemo(() => {
     if (!activeId) return null;
-    const activeIdStr = String(activeId);
+    const activeIdStr = String(activeId); // 수정부분
     for (const board of boards) {
       const card = board.toDos.find((toDo) => String(toDo.id) === activeIdStr);
       if (card) {
