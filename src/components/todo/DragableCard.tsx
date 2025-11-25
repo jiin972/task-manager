@@ -69,10 +69,10 @@ function DragalbeCard({
   });
   //dnd 스타일 정의
   const style = {
-    // isOverlay가 true일 때는 transform과 transition을 적용하지 않습니다.
+    // isOverlay가 true일 때는 transform과 transition을 적용하지 않음
     transform: isOverlay ? undefined : CSS.Transform.toString(transform) || "",
     transition,
-    // 오버레이가 아닐 때만 isDragging에 따른 투명도를 적용합니다.
+    // 오버레이가 아닐 때만 isDragging에 따른 투명도를 적용
     opacity: !isOverlay && isDragging ? 0.4 : 1,
   };
 
@@ -91,7 +91,7 @@ function DragalbeCard({
       initial="normal"
       whileHover={isOverlay ? undefined : "hover"}
       ref={setNodeRef}
-      style={style} // 수정된 style 객체를 적용합니다.
+      style={style} // 수정된 style 객체를 적용
       $isOverlay={isOverlay}
       $isDragging={isDragging}
       {...(!isOverlay && listeners)}
